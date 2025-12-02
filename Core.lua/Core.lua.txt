@@ -1,0 +1,22 @@
+-- Sauce Core - Auto-Join Rare Pet Servers
+while task.wait(0.7) do
+    pcall(function()
+        local data = game:GetService("HttpService"):JSONDecode(
+            game:HttpGet("https://games.roblox.com/v1/games/18164307305/servers/Public?sortOrder=Asc&limit=100")
+        )
+        for _, server in pairs(data.data or {}) do
+            if server.playing > 0 and server.id then
+                syn.request({
+                    Url = "http://127.0.0.1:6463/rpc?v=1",
+                    Method = "POST",
+                    Headers = {["Content-Type"] = "application/json"},
+                    Body = game:GetService("HttpService"):JSONEncode({
+                        cmd = "INVITE_BROWSER",
+                        args = {code = "roblox://placeId=18164307305&gameId="..server.id},
+                        nonce = game:GetService("HttpService"):GenerateGUID(false)
+                    })
+                })
+            end
+        end
+    end)
+end
