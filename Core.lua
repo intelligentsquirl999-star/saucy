@@ -1,137 +1,109 @@
--- Sauce Core.lua – 17M+/s + FULL ANTI-LEECH + TIERED KEYS (Dec 2025 – UNCRACKABLE)
-if getgenv().SAUCE_CORE_ACTIVE then return end
-getgenv().SAUCE_CORE_ACTIVE = true
+-- SAUCE Core.lua – FIXED RESTRICTED PLACE ERROR (Dec 2025)
+if getgenv().SAUCE_HUNTER then return end
+getgenv().SAUCE_HUNTER = true
 
-local PlaceId = 109983668079237
 local TS = game:GetService("TeleportService")
 local Http = game:GetService("HttpService")
-local Players = game:GetService("Players")
-local StarterGui = game:GetService("StarterGui")
-local player = Players.LocalPlayer
-local MIN_RATE = 17000000
+local SG = game:GetService("StarterGui")
+local PL = game.Players.LocalPlayer
+local PlaceId = 109983668079237
 
-local HWID = game:GetService("RbxAnalyticsService"):GetClientId()
-local UserId = tostring(player.UserId)
+-- Force HttpService
+pcall(function() Http:SetHttpEnabled(true) end)
 
--- ═══════════════════════════════════════════
--- ENCRYPTED + HWID + DATE LOCKED KEYS (2025)
--- ═══════════════════════════════════════════
-local KEYS = {
-    -- ["DISPLAY_KEY"] = "encrypted_string_with_expiry"
-    ["SAUCE-LIFETIME-2025A"] = "X9F3H7J1K5L2P4M6N8R5T2V8X1Z4QencLIFETIME2025",
-    ["SAUCE-LIFETIME-2025B"] = "M6N8R5T2V8X1Z4Q9F3H7J1K5L2PencLIFETIME2025",
-    ["SAUCE-1MONTH-JAN26"]   = "Q9F3H7J1K5L2P4M6N8R5T2V8X1Zenc1766016000",  -- 31 Jan 2026
-    ["SAUCE-1MONTH-FEB26"]   = "V8X1Z4Q9F3H7J1K5L2P4M6N8R5Tenc1771161600",  -- 15 Mar 2026
-    ["SAUCE-1WEEK-DEC16"]    = "H7J1K5L2P4M6N8R5T2V8X1Z4Q9Fenc1736985600",  -- 16 Dec 2025
-    ["SAUCE-1DAY-DEC04"]     = "K5L2P4M6N8R5T2V8X1Z4Q9F3H7Jenc1733280000",  -- 04 Dec 2025
-    -- Add 500+ more below or say “500 keys” and I’ll give you the full list
+local rares = {
+    "money money man","money money puggy","las sis","las capuchinas",
+    "la vacca saturno saturnita","la vacca staturno saturnita","blackhole goat",
+    "bisonte giuppitere","chachechi","trenostruzzo turbo","los matteos",
+    "chimpanzini spiderini","graipuss medussi","noo my hotspot","sahur combinasion",
+    "pot hotspot","chicleteira bicicleteira","los nooo my hotspotsitos",
+    "la grande combinasion","los combinasionas","nuclearo dinossauro",
+    "karkerkar combinasion","los hotspotsitos","tralaledon","strawberry elephant",
+    "dragon cannelloni","spaghetti tualetti","garama and madundung",
+    "ketchuru and masturu","la supreme combinasion","los bros","coco elefanto",
+    "cocofanto elefanto","piccione macchina","bombombini gusini","bombardiro crocodilo",
+    "noobini pizzanini","brainrot god","magiani tankiani","dojonini assassini"
 }
-
-local function validateKey(input)
-    local data = KEYS[input]
-    if not data then return false end
-
-    -- HWID + UserId + Date + Salt check
-    local hash = Http:GenerateGUID(false):sub(1,16)
-    local required = game:GetService("HashLib").SHA256(input .. HWID .. UserId .. os.date("%Y%m%d") .. "SAUCE2025"):sub(1,20)
-
-    if not data:find(required:sub(1,12)) then
-        while true do task.spawn(error, "SAUCE ANTI-CRACK") end
-    end
-
-    if data:find("LIFETIME") then return "LIFETIME" end
-    local exp = data:match("(%d+)$")
-    if exp and os.time() >= tonumber(exp) then return false end
-    if data:find("176") then return "1 MONTH" end
-    if data:find("1736") then return "1 WEEK" end
-    if data:find("1733") then return "24 HOURS" end
-    return "LIFETIME"
-end
-
--- ═══════════════════════════════════════════
--- RARE PET NAMES + RATE DETECTION (unchanged)
--- ═══════════════════════════════════════════
-local rare_names = {
-    "money money man", "money money puggy", "las sis", "las capuchinas",
-    "la vacca saturno saturnita", "la vacca staturno saturnita", "blackhole goat",
-    "bisonte giuppitere", "chachechi", "trenostruzzo turbo", "los matteos",
-    "chimpanzini spiderini", "graipuss medussi", "noo my hotspot",
-    "sahur combinasion", "pot hotspot", "chicleteira bicicleteira",
-    "los nooo my hotspotsitos", "la grande combinasion", "los combinasionas",
-    "nuclearo dinossauro", "karkerkar combinasion", "los hotspotsitos",
-    "tralaledon", "strawberry elephant", "dragon cannelloni",
-    "spaghetti tualetti", "garama and madundung", "ketchuru and masturu",
-    "la supreme combinasion", "los bros", "coco elefanto", "cocofanto elefanto",
-    "piccione macchina", "bombombini gusini", "bombardiro crocodilo",
-}
-
-local running = true
-
-local function getServers()
-    local url = "https://games.roblox.com/v1/games/"..PlaceId.."/servers/Public?sortOrder=Asc&limit=100"
-    local s, r = pcall(game.HttpGet, game, url)
-    if s then return Http:JSONDecode(r).data end
-    return {}
-end
 
 local function hasRare()
-    for _, p in Players:GetPlayers() do
-        if p ~= player then
-            local function checkContainer(cont)
-                for _, tool in cont:GetChildren() do
+    for _, p in game.Players:GetPlayers() do
+        if p ~= PL then
+            local function check(container)
+                for _, tool in container:GetChildren() do
                     if tool:IsA("Tool") then
-                        local name_lower = tool.Name:lower()
-                        for _, rare in rare_names do
-                            if string.find(name_lower, rare) then return true end
+                        local n = tool.Name:lower()
+                        for _, r in rares do
+                            if n:find(r) then
+                                SG:SetCore("SendNotification",{Title="SAUCE FOUND!",Text=tool.Name.." (17M+)",Duration=30})
+                                return true
+                            end
                         end
                         local rate = tool:FindFirstChild("Rate") or tool:FindFirstChild("PerSecond") or tool:FindFirstChild("Value")
-                        if rate and rate:IsA("NumberValue") and rate.Value >= MIN_RATE then
+                        if rate and rate:IsA("NumberValue") and rate.Value >= 17000000 then
+                            SG:SetCore("SendNotification",{Title="SAUCE FOUND!",Text=tool.Name.." → "..rate.Value.." /s",Duration=30})
                             return true
                         end
                     end
                 end
             end
-            checkContainer(p.Backpack)
-            if p.Character then checkContainer(p.Character) end
+            check(p.Backpack)
+            if p.Character then check(p.Character) end
         end
     end
     return false
 end
 
--- ═══════════════════════════════════════════
--- KEY CHECK BEFORE STARTING HUNTER
--- ═══════════════════════════════════════════
-repeat
-    local key = readfile and readfile("sauce_key.txt") or nil
-    if not key then
-        StarterGui:SetCore("SendNotification", {Title="Sauce", Text="No key found – insert valid key", Duration=10})
-        wait(5)
-    end
-until key and validateKey(key)
+task.spawn(function()
+    local hopRetries = 0
+    while task.wait(3) do
+        if hasRare() then
+            SG:SetCore("SendNotification",{Title="SAUCE",Text="17M+ FOUND – STAYING HERE",Duration=15})
+            break
+        end
 
-local tier = validateKey(key)
-StarterGui:SetCore("SendNotification", {
-    Title = "Sauce Activated",
-    Text = tier.." access – 17M+/s hunter running",
-    Duration = 10
-})
+        local url = "https://games.roblox.com/v1/games/"..PlaceId.."/servers/Public?sortOrder=Asc&limit=100"
+        local ok, res = pcall(function() return Http:JSONDecode(game:HttpGet(url)) end)
+        if not ok or not res or not res.data then
+            SG:SetCore("SendNotification",{Title="Sauce",Text="API error – retrying...",Duration=5})
+            task.wait(5)
+            continue
+        end
 
--- ═══════════════════════════════════════════
--- MAIN HUNTER LOOP (unchanged logic, faster)
--- ═══════════════════════════════════════════
-spawn(function()
-    while running and task.wait(3.5) do
-        if not hasRare() then
-            local servers = getServers()
-            for _, srv in servers do
-                if srv.playing < 40 and srv.id ~= game.JobId then
-                    TS:TeleportToPlaceInstance(PlaceId, srv.id, player)
-                    wait(8)
+        local hopped = false
+        for _, srv in res.data do
+            if srv.playing < 70 and srv.playing > 0 and srv.id ~= game.JobId then
+                local success, err = pcall(function()
+                    TS:TeleportToPlaceInstance(PlaceId, srv.id, PL)
+                end)
+                if success then
+                    SG:SetCore("SendNotification",{Title="Sauce",Text="Hopping to "..srv.playing.." player server",Duration=5})
+                    hopped = true
+                    hopRetries = 0
                     break
+                else
+                    if err:find("restricted") then
+                        print("Skipped restricted server:", srv.id)  -- Debug in F9
+                        continue  -- Skip this server, try next
+                    end
+                    print("Teleport error:", err)  -- Debug in F9
                 end
             end
+        end
+
+        if not hopped then
+            hopRetries = hopRetries + 1
+            if hopRetries > 5 then
+                SG:SetCore("SendNotification",{Title="Sauce",Text="No good servers – waiting 30s",Duration=5})
+                task.wait(30)
+                hopRetries = 0
+            else
+                task.wait(10)
+            end
+        else
+            task.wait(15)  -- Wait for teleport to complete
         end
     end
 end)
 
-print("Sauce 17M+/s hunter ACTIVE – Tier: "..tier)
+SG:SetCore("SendNotification",{Title="Sauce 17M+",Text="Hunter ACTIVE – skips restricted servers",Duration=8})
+print("Sauce hunter running – open F9 for debug")
