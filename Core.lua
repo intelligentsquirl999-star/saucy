@@ -1,55 +1,44 @@
--- Sauce Core.lua – Steal a Brainrot Rare Pet Auto Joiner (Dec 2025)
--- Works on Wave / Solara / Delta / Codex
-
+-- Sauce Core.lua – ONLY 17M+ PER SECOND SERVERS (Dec 2025)
 local PlaceId = 109983668079237
 local TS = game:GetService("TeleportService")
 local Http = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
+local MIN_RATE = 17000000  -- 17 million+ per second
 local running = true
-local minValue = 8000000  -- Change this to make it stricter (8M+ = God/Mythic/Secret servers)
-
-local function joinServer(jobId)
-    TS:TeleportToPlaceInstance(PlaceId, jobId, player)
-end
 
 local function getServers()
     local url = "https://games.roblox.com/v1/games/"..PlaceId.."/servers/Public?sortOrder=Asc&limit=100"
-    local success, result = pcall(function() return game:HttpGet(url) end)
-    if success then return Http:JSONDecode(result).data end
+    local s, r = pcall(game.HttpGet, game, url)
+    if s then return Http:JSONDecode(r).data end
     return {}
 end
 
-local function hasRare()
-    local total = 0
+local function has17MPlus()
     for _, p in Players:GetPlayers() do
         if p ~= player and p.Character then
             for _, tool in p.Backpack:GetChildren() do
                 if tool:IsA("Tool") then
-                    local name = tool.Name:lower()
-                    local val = tool:FindFirstChild("Value")
-                    if val and val:IsA("IntValue") then
-                        total = total + val.Value
-                    end
-                    if name:find("god") or name:find("mythic") or name:find("secret") or name:find("celestial") then
+                    local rate = tool:FindFirstChild("Rate") or tool:FindFirstChild("PerSecond") or tool:FindFirstChild("Value")
+                    if rate and rate:IsA("IntValue") and rate.Value >= MIN_RATE then
                         return true
                     end
                 end
             end
         end
     end
-    return total >= minValue
+    return false
 end
 
 spawn(function()
-    while running and wait(6) do
-        if not hasRare() then
+    while running and wait(5) do
+        if not has17MPlus() then
             local servers = getServers()
-            for _, server in pairs(servers) do
-                if server.playing < 40 and server.id ~= game.JobId then
-                    joinServer(server.id)
-                    wait(8)
+            for _, srv in servers do
+                if srv.playing < 45 and srv.id ~= game.JobId then
+                    TS:TeleportToPlaceInstance(PlaceId, srv.id, player)
+                    wait(9)
                     break
                 end
             end
@@ -58,8 +47,9 @@ spawn(function()
 end)
 
 game.StarterGui:SetCore("SendNotification", {
-    Title = "Sauce Activated";
-    Text = "Hunting rare Brainrot servers...";
-    Duration = 6;
+    Title = "Sauce 17M+ Active",
+    Text = "Only joining servers with 17M+/s pets",
+    Duration = 8
 })
-print("Sauce Core loaded – stealing rares now")
+
+print("Sauce 17M+ per second hunter running")
