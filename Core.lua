@@ -1,4 +1,4 @@
--- Sauce Core.lua – ONLY 17M+ PER SECOND SERVERS (Dec 2025)
+-- Sauce Core.lua – TRUE 17M+/s DETECTION (Dec 2025)
 local PlaceId = 109983668079237
 local TS = game:GetService("TeleportService")
 local Http = game:GetService("HttpService")
@@ -17,12 +17,24 @@ end
 
 local function has17MPlus()
     for _, p in Players:GetPlayers() do
-        if p ~= player and p.Character then
+        if p ~= player then
+            -- Check Backpack
             for _, tool in p.Backpack:GetChildren() do
                 if tool:IsA("Tool") then
-                    local rate = tool:FindFirstChild("Rate") or tool:FindFirstChild("PerSecond") or tool:FindFirstChild("Value")
-                    if rate and rate:IsA("IntValue") and rate.Value >= MIN_RATE then
+                    local rate = tool:FindFirstChild("Rate") or tool:FindFirstChild("PerSecond")
+                    if rate and rate:IsA("NumberValue") and rate.Value >= MIN_RATE then
                         return true
+                    end
+                end
+            end
+            -- Check equipped pets (Character)
+            if p.Character then
+                for _, tool in p.Character:GetChildren() do
+                    if tool:IsA("Tool") then
+                        local rate = tool:FindFirstChild("Rate") or tool:FindFirstChild("PerSecond")
+                        if rate and rate:IsA("NumberValue") and rate.Value >= MIN_RATE then
+                            return true
+                        end
                     end
                 end
             end
@@ -47,9 +59,9 @@ spawn(function()
 end)
 
 game.StarterGui:SetCore("SendNotification", {
-    Title = "Sauce 17M+ Active",
-    Text = "Only joining servers with 17M+/s pets",
+    Title = "Sauce 17M+ v2",
+    Text = "Only staying in TRUE 17M+/s servers",
     Duration = 8
 })
 
-print("Sauce 17M+ per second hunter running")
+print("Sauce 17M+ v2 hunter ACTIVE (equipped pets fixed)")
